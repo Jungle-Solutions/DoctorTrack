@@ -12,26 +12,38 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Image
+        source={require("./src/assets/logo-doctrack.png")}
+        style={styles.logo}
+      />
+
+      <Image
         source={require("./src/assets/QRCode.png")}
         style={styles.logo}
       />
-      <TextInput
-        style={styles.textinput}
-        placeholder='Atividade'
-        onChangeText={onChangeText}
-        value={text}
-      />
+
      <Picker
         style={styles.pickerComponent}
         selectedValue={selectedActivity}
         onValueChange={(itemValue, itemIndex) =>
         setSelectedActivity(itemValue)
         }>
-        <Picker.Item label="Selecione a atividade" value="" />
-        <Picker.Item label="Pediatria" value="pediatria" />
+        <Picker.Item label="Selecione a especialidade" value="" enabled={false} style={{ color: 'gray' }} />
+        <Picker.Item label="Clínica Médica" value="clinica medica" />
         <Picker.Item label="Cirurgia" value="cirurgia" />
-        <Picker.Item label="LoremIpsum" value="lorem" />
+        <Picker.Item label="Pediatria" value="pediatria" />
+        <Picker.Item label="Ginecologia e Obstetrícia" value="ginecologia e obstetricia" />
+        <Picker.Item label="Psiquiatria" value="psiquiatria" />
+        <Picker.Item label="Medicina de Família e Comunidade" value="medicina de familia e comunidade" />
         </Picker>
+
+        <TextInput
+    style={{ height: 200, width: 200, ...styles.textinput, fontWeight: 'normal' }}
+    placeholder='Atividade'
+    onChangeText={onChangeText}
+    value={text}
+    multiline={true}
+    numberOfLines={10}
+/>
     </View>
   );
 }
