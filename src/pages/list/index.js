@@ -2,22 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useFocusEffect } from '@react-navigation/native';
 
-export function Faces() {
+export default function List() {
   const [points, setPoints] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    fetchPoints();
-  }, []);
 
   const fetchPoints = async () => {
     try {
       setIsLoading(true);
       const storedPoints = await AsyncStorage.getItem('points');
       if (storedPoints) {
-        const parsedPoints = JSON.parse(storedPoints).filter(point => !point.finished); 
+        const parsedPoints = JSON.parse(storedPoints);
         setPoints(parsedPoints.reverse());
         console.log('Points fetched successfully:', parsedPoints);
       }
@@ -28,9 +24,15 @@ export function Faces() {
     }
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchPoints();
+    }, [])
+  );
+
   const renderCard = ({ item }) => (
     <View style={styles.card}>
-      <Ionicons name="alert-circle-outline" size={32} color="#e74c3c" style={styles.icon} />
+      <Ionicons name={item.finished ? 'checkmark-circle-outline' : 'alert-circle-outline'} size={32} color={item.finished ? '#1c8785' : '#e74c3c'} style={styles.icon} />
       <View style={styles.cardContent}>
         <Text style={styles.cardText}>Atividade: {item.selectedActivity}</Text>
         <Text style={styles.cardText}>Descrição: {item.text}</Text>
@@ -42,10 +44,6 @@ export function Faces() {
     </View>
   );
 
-  const handleVerifyPoints = async () => {
-    
-  }
-
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -53,11 +51,11 @@ export function Faces() {
       ) : points.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons name="sad" size={48} color="#1c8785" style={styles.icon} />
-          <Text style={styles.emptyText}>Nenhum ponto pendente.</Text>
+          <Text style={styles.emptyText}>Nenhum ponto registrado ainda.</Text>
         </View>
       ) : (
         <>
-          <Text style={styles.title}>Pontos Pendentes</Text>
+          <Text style={styles.title}>Meus Pontos</Text>
           <FlatList
             data={points}
             renderItem={renderCard}
@@ -65,12 +63,6 @@ export function Faces() {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleVerifyPoints()}
-            >
-            <Text style={styles.buttonText}>Verificar Pendências</Text>
-            </TouchableOpacity>
         </>
       )}
     </View>
@@ -131,16 +123,5 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 15,
-  },
-  button: {
-    backgroundColor: '#1c8785',
-    borderRadius: 10,
-    padding: 10,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
